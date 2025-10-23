@@ -49,12 +49,12 @@ export default function App() {
     const itemId = active.id as string;
     const extracted_active_status=itemId.split("-")[1].toUpperCase();
     const newStatus = over.id as Item['status'];
-    const extracted_status=newStatus.split("-")[1].toUpperCase();
-    if (extracted_active_status!=extracted_status){
+    const extracted_over_status=newStatus.split("-")[1].toUpperCase();
+    if (extracted_active_status!=extracted_over_status){
       alert("wrong bucket")
       return;
     }
-    console.log("extracted status ",extracted_status);
+    console.log("extracted status ",extracted_over_status);
 
     
 
@@ -63,7 +63,7 @@ export default function App() {
         item.id === itemId
           ? {
               ...item,
-              status: extracted_status,
+              status: extracted_over_status,
             }
           : item,
       ),

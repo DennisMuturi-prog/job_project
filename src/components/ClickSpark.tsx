@@ -14,6 +14,7 @@ interface ClickSparkProps {
   extraScale?: number;
   ref: Ref<SparkRef>
   children?: React.ReactNode;
+  className?: string;
 }
 
 interface Spark {
@@ -32,6 +33,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
   easing = 'ease-out',
   extraScale = 1.0,
   ref,
+  className = "",
   children
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -184,6 +186,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
 
   return (
     <div
+    className={className}
       ref={localDivRef}
       style={{
         width: '100%',

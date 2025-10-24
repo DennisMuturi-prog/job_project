@@ -14,6 +14,7 @@ function Droppable(props:DroppableProps) {
   });
   const style = {
     color: isOver ? 'green' : undefined,
+    border:isOver ? '1px solid green' :undefined
   };
   
   

@@ -40,7 +40,7 @@ const StepNavigation = () => {
   return (
     <button onClick={isLast ? reset : next}>
       {when(
-        "last",
+        "winning",
         () => "Reset",
         () => "Next"
       )}

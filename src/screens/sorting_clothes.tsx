@@ -51,6 +51,9 @@ export default function SortinClothes({title}:{title:string}) {
   const divColouredRef = useRef<SparkRef>(null);
   const divDelicateRef = useRef<SparkRef>(null);
   const [shakingBucket, setShakingBucket] = useState<string | null>(null);
+  const [playSuccessChime] = useSound('/winning-82808.mp3'); // Add this
+  const unsortedItems = items.filter((item) => item.status === "UNSORTED");
+  const isComplete = unsortedItems.length === 0;
 
   function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
@@ -89,9 +92,7 @@ export default function SortinClothes({title}:{title:string}) {
       ),
     );
   }
-  const [playSuccessChime] = useSound('/success_chime.mp3'); // Add this
-  const unsortedItems = items.filter((item) => item.status === "UNSORTED");
-  const isComplete = unsortedItems.length === 0;
+  
   useEffect(() => {
     if (isComplete) {
       playSuccessChime();
@@ -99,6 +100,7 @@ export default function SortinClothes({title}:{title:string}) {
         duration: 5000,
       });
     }
+    console.log("happened")
   }, [isComplete, playSuccessChime]);
 
   return (

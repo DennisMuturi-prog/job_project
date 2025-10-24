@@ -1,26 +1,27 @@
 import type { Item } from '@/types'
-import React from 'react'
-import Draggable from './Draggable'
 import Droppable from './Droppable';
 
 interface CategoryProps {
-    items:Item[],
-    type:string
+  items: Item[],
+  type: string,
+  asset_src: string
 }
 
-function Category_clothes({items,type}:CategoryProps) {
+function Category_clothes({ items, type, asset_src }: CategoryProps) {
   return (
     <div>
-      <h1>Category {type}</h1>
-        {items.map((item) => (
-        <Draggable key={item.id} id={item.id} >
-            <h2>{item.asset_src}</h2>
-        </Draggable>
-      ))}
+
       <Droppable id={`droppable-${type}`}>
-        <h2>{`${type} bucket`}</h2>
-    
+        <img src={asset_src} alt="" width={80} height={80} />
+        <h2>{`${type}S`}</h2>
+
       </Droppable>
+      
+        {items.map((item) => (
+          <div key={item.id}>
+            <img src={item.asset_src} alt="" width={80} height={80} />
+          </div>
+        ))}
     </div>
   )
 }

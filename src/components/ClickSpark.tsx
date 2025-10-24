@@ -189,8 +189,8 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
     className={className}
       ref={localDivRef}
       style={{
-        width: '100%',
-        height: '100%',
+        // width: '100%',
+        // height: '100%',
         position: 'relative'
       }}
       onClick={handleClick}
@@ -199,7 +199,7 @@ const ClickSpark: React.FC<ClickSparkProps> = ({
         ref={canvasRef}
         style={{
           position: 'absolute',
-          border: '1px solid red',
+          // border: '1px solid red',
           inset: 0,
           pointerEvents: 'none'
         }}

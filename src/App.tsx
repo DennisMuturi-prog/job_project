@@ -1,15 +1,51 @@
-import { Toaster } from "sonner";
+import * as React from "react";
+import { defineStepper } from "@stepperize/react";
+import UserInfo from "./screens/user_info";
 import SortinClothes from "./screens/sorting_clothes";
-import LoadAndSetupWasher from "./screens/load_and_setup_washer";
-import EmptyWashingMachine from "./components/empty_washing_machine";
 
-export default function App() {
+const Stepper = defineStepper(
+  { id: "registration", title: "First" },
+  { id: "sorting", title: "SORT LAUNDRY" },
+  { id: "load_and_setup", title: "LOAD AND SETUP WASHER" },
+  { id: "washing", title: "WASH WITH ARIEL" },
+  { id: "rinsing", title: "RINSE" },
+  { id: "cycle_finished", title: "CYCLE FINISHED" },
+  { id: "spinning", title: "SPIN TO WIN" },
+  { id: "winning", title: "YOU WON" }
+);
+
+const App = () => (
+  <Stepper.Scoped>
+    <StepContent />
+    <StepNavigation />
+  </Stepper.Scoped>
+);
+
+const StepContent = () => {
+  const { when } = Stepper.useStepper();
   return (
-    <div className="p-4">
-      <SortinClothes/>
-      <LoadAndSetupWasher/>
-      <EmptyWashingMachine/>
-      <Toaster/>
-    </div>
+    <React.Fragment>
+      {when("registration", () => (
+        <UserInfo/>
+      ))}
+      {when("sorting", (step) => (
+        <SortinClothes title={step.title}/>
+      ))}
+    </React.Fragment>
   );
-}
+};
+
+const StepNavigation = () => {
+  const { isLast, reset, next, when } = Stepper.useStepper();
+  return (
+    <button onClick={isLast ? reset : next}>
+      {when(
+        "last",
+        () => "Reset",
+        () => "Next"
+      )}
+    </button>
+  );
+};
+
+export default App;

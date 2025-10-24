@@ -8,10 +8,10 @@ interface UnsortedProps {
 
 function Unsorted_clothes({items}:UnsortedProps) {
   return (
-    <div>
+    <div className='flex gap-3 justify-center'>
         {items.map((item) => (
         <Draggable key={item.id} id={item.id} >
-            <h1>{item.asset_src}</h1>
+            <img src={item.asset_src} alt="" width={80} height={80}/>
         </Draggable>
       ))}
 

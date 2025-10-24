@@ -8,14 +8,16 @@ interface DraggableProps {
 }
 
 function Draggable(props: DraggableProps) {
-    const { attributes, listeners, setNodeRef,transform} = useDraggable({
+    const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: props.id,
     });
+    
     const style = {
-        transform: CSS.Translate.toString(transform),
-    }
-
-
+        transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+        zIndex: isDragging ? 1000 : 'auto',
+        cursor: isDragging ? 'grabbing' : 'grab',
+        opacity: isDragging ? 0.8 : 1,
+    };
     return (
         <button ref={setNodeRef}  {...listeners} {...attributes} style={style}>
             {props.children}

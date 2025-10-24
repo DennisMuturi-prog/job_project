@@ -10,32 +10,32 @@ import useSound from "use-sound";
 const INITIAL_ITEMS: Item[] = [
   {
     id: 'draggable-white-1',
-    asset_src: 'white',
+    asset_src: 'shirt.png',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-white-2',
-    asset_src: 'white',
+    asset_src: 'tshirt.png',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-1',
-    asset_src: 'coloured',
+    asset_src: 'towel.png',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-2',
-    asset_src: 'coloured',
+    asset_src: 'hoodie.png',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-delicate',
-    asset_src: 'delicate',
+    asset_src: '039_jean.png',
     status: 'UNSORTED',
   },
 ];
 
-export default function SortinClothes() {
+export default function SortinClothes({title}:{title:string}) {
   const mouseSensor = useSensor(MouseSensor);
   const touchSensor = useSensor(TouchSensor);
   const keyboardSensor = useSensor(KeyboardSensor);
@@ -67,7 +67,6 @@ export default function SortinClothes() {
       setTimeout(() => setShakingBucket(null), 500);
       return;
     }
-    console.log("extracted status ", extracted_over_status);
 
     if (extracted_over_status === "WHITE") {
       divWhiteRef.current?.handleDivClick()
@@ -91,24 +90,25 @@ export default function SortinClothes() {
   }
 
   return (
-    <div className="p-4">
-      <div className="flex gap-8">
+      <div className="">
+        <h1>{title}</h1>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <Unsorted_clothes
             items={items.filter((item) => item.status === "UNSORTED")}
           />
-          <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef}  className={shakingBucket === "WHITE" ? "shake" : ""}>
-            <Category_clothes type="white" items={items.filter((item) => item.status === "WHITE")} />
-          </ClickSpark >
-          <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divColouredRef} className={shakingBucket === "COLOURED" ? "shake" : ""}>
-            <Category_clothes type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
-
-          </ClickSpark>
-          <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divDelicateRef} className={shakingBucket === "DELICATE" ? "shake" : ""}>
-            <Category_clothes type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
-          </ClickSpark>
+          <div className="flex gap-4 justify-center">
+              <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef}  className={shakingBucket === "WHITE" ? "shake" : ""}>
+                <Category_clothes asset_src="laundry_basket1.png" type="WHITE" items={items.filter((item) => item.status === "WHITE")} />
+              </ClickSpark >
+            
+            <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divColouredRef} className={shakingBucket === "COLOURED" ? "shake" : ""}>
+              <Category_clothes asset_src="laundry_basket_2.jpeg" type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
+            </ClickSpark>
+            <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divDelicateRef} className={shakingBucket === "DELICATE" ? "shake" : ""}>
+              <Category_clothes asset_src="laundry_basket_3.jpeg" type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
+            </ClickSpark>
+          </div>
         </DndContext>
       </div>
-    </div>
   );
 }

@@ -1,9 +1,10 @@
 import ClickSpark, { type SparkRef } from "@/components/ClickSpark";
+import { Button } from "@/components/ui/button";
 import type { Item } from "@/types";
 import Category_clothes from "@/ui_components/Category_clothes";
 import Unsorted_clothes from "@/ui_components/Unsorted_clothes";
 import { useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSensors, type DragEndEvent, DndContext } from "@dnd-kit/core";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { toast} from "sonner";
 import useSound from "use-sound";
 
@@ -88,13 +89,24 @@ export default function SortinClothes({title}:{title:string}) {
       ),
     );
   }
+  const [playSuccessChime] = useSound('/success_chime.mp3'); // Add this
+  const unsortedItems = items.filter((item) => item.status === "UNSORTED");
+  const isComplete = unsortedItems.length === 0;
+  useEffect(() => {
+    if (isComplete) {
+      playSuccessChime();
+      toast.success("🎉 Congratulations! All clothes sorted!", {
+        duration: 5000,
+      });
+    }
+  }, [isComplete, playSuccessChime]);
 
   return (
       <div className="">
         <h1>{title}</h1>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <Unsorted_clothes
-            items={items.filter((item) => item.status === "UNSORTED")}
+            items={unsortedItems}
           />
           <div className="flex gap-4 justify-center">
               <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef}  className={shakingBucket === "WHITE" ? "shake" : ""}>
@@ -109,6 +121,7 @@ export default function SortinClothes({title}:{title:string}) {
             </ClickSpark>
           </div>
         </DndContext>
+        {isComplete && <Button className="bounce_button">next</Button>}
       </div>
   );
 }

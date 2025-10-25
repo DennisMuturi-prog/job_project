@@ -6,7 +6,8 @@ import LoadAndSetupWasher from "./screens/load_and_setup_washer";
 import { Toaster } from "sonner";
 import Washing from "./screens/Washing";
 import Rinsing from "./screens/Rinsing";
-import Cycle_finsihed from "./screens/Cycle_finsihed";
+import Cycle_finished from "./screens/Cycle_finished";
+import Spin from "./screens/Spin";
 
 export const Stepper = defineStepper(
   { id: "registration", title: "First" },
@@ -46,7 +47,10 @@ const StepContent = () => {
         <Rinsing title={step.title}/>
       ))}
       {when("cycle_finished", (step) => (
-        <Cycle_finsihed title={step.title}/>
+        <Cycle_finished title={step.title}/>
+      ))}
+      {when("spinning", (step) => (
+        <Spin title={step.title}/>
       ))}
       <Toaster/>
     </React.Fragment>

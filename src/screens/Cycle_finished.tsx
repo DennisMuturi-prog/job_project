@@ -7,9 +7,11 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Stepper } from '@/App';
+import confetti from "canvas-confetti";
 
-function Cycle_finsihed({title}:{title:string}) {
+function Cycle_finished({title}:{title:string}) {
     const { next } = Stepper.useStepper();
+    confetti()
     return (
         <Card>
             <CardHeader>
@@ -32,4 +34,4 @@ function Cycle_finsihed({title}:{title:string}) {
     )
 }
 
-export default Cycle_finsihed
+export default Cycle_finished

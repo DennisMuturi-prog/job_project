@@ -39,14 +39,17 @@ const ButtonsContainer = styled.div`
   margin-top: 1rem;
 `;
 
-interface Participant {
+export interface Prize {
   img_src: string;
   label: string;
 }
 
 interface Props {
-  participants: Participant[];
+  prizes: Prize[];
 }
+
+const betterLuckColors = ['#2563EB', '#10B981']; // Blue and Green
+const prizeColors = ['#FFFFFF', '#F3F4F6'];
 
 const colors = [
   '#CC4629', // Darker vibrant orange
@@ -74,33 +77,34 @@ const colors = [
   '#CC294F', // Darker hot pink
 ];
 
-export const Wheel: React.FC<Props> = ({ participants }) => {
+export const Wheel: React.FC<Props> = ({ prizes }) => {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [spinDirection, setSpinDirection] = useState<
     'clockwise' | 'counterclockwise'
   >('clockwise');
   const [showPopup, setShowPopup] = useState(false);
-  const [popupWinner, setPopupWinner] = useState<Participant | null>(null);
-    const [images, setImages] = useState<Map<string, HTMLImageElement>>(new Map());
+  const [showLosingPopup, setShowLosingPopup] = useState(false);
+  const [popupWinner, setPopupWinner] = useState<Prize | null>(null);
+  const [images, setImages] = useState<Map<string, HTMLImageElement>>(new Map());
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const numSectors = participants.length;
+  const numSectors = prizes.length;
 
   useEffect(() => {
     const loadImages = async () => {
       const imageMap = new Map<string, HTMLImageElement>();
-      
-      const loadPromises = participants.map((participant) => {
+
+      const loadPromises = prizes.map((prize) => {
         return new Promise<void>((resolve) => {
           const img = new Image();
-          img.src = participant.img_src;
+          img.src = prize.img_src;
           img.onload = () => {
-            imageMap.set(participant.img_src, img);
+            imageMap.set(prize.img_src, img);
             resolve();
           };
           img.onerror = () => {
-            console.error(`Failed to load image: ${participant.img_src}`);
+            console.error(`Failed to load image: ${prize.img_src}`);
             resolve();
           };
         });
@@ -111,13 +115,144 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
     };
 
     loadImages();
-  }, [participants]);
+  }, [prizes]);
 
   useEffect(() => {
+    const drawWheel = () => {
+      const canvas = canvasRef.current!;
+      const ctx = canvas.getContext('2d')!;
+      const radius = canvas.width / 2;
+      const sliceAngle = (2 * Math.PI) / numSectors;
+
+      // Clear previous drawing
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.translate(radius, radius);
+      ctx.rotate(-rotation * (Math.PI / 180));
+
+      // Draw sectors
+      for (let i = 0; i < numSectors; i++) {
+        const startAngle = i * sliceAngle;
+        const endAngle = (i + 1) * sliceAngle;
+        const prize = prizes[i];
+        
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, radius, startAngle, endAngle);
+        ctx.closePath();
+        
+        // Determine color based on prize type
+        if (prize.label === 'better luck') {
+          // Alternate between blue and green for better luck sectors
+          const betterLuckIndex = Math.floor(i / 2) % 2;
+          ctx.fillStyle = betterLuckColors[betterLuckIndex];
+        } else {
+          // White or light gray for real prizes
+          ctx.fillStyle = prizeColors[i % 2];
+        }
+        
+        ctx.fill();
+
+        // Draw borders between sectors
+        ctx.strokeStyle = prize.label === 'better luck' ? 'white' : '#D1D5DB';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // Draw the image and name in the sector
+        ctx.save();
+        ctx.rotate((startAngle + endAngle) / 2);
+
+        const img = images.get(prize.img_src);
+
+        // Draw image closer to center
+        if (img) {
+          const imgSize = 60;
+          const imgX = radius * 0.35 - imgSize / 2;
+          const imgY = -imgSize / 2;
+
+          // Draw background circle behind image (darker for better visibility)
+          ctx.beginPath();
+          ctx.arc(radius * 0.35, 0, imgSize / 2 + 3, 0, 2 * Math.PI);
+          ctx.fillStyle = prize.label === 'better luck' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)';
+          ctx.fill();
+
+          // Create circular clipping path for image
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(radius * 0.35, 0, imgSize / 2, 0, 2 * Math.PI);
+          ctx.closePath();
+          ctx.clip();
+          ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
+          ctx.restore();
+
+          // Draw border around image
+          ctx.beginPath();
+          ctx.arc(radius * 0.35, 0, imgSize / 2, 0, 2 * Math.PI);
+          ctx.strokeStyle = prize.label === 'better luck' ? '#FFF' : '#000';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+        }
+
+        // Draw the name with better visibility
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const text = capitalize(prize.label) || '';
+        ctx.font = 'bold 16px Arial';
+        const textMetrics = ctx.measureText(text);
+        const textWidth = textMetrics.width;
+        const textHeight = 20;
+        
+        // Background rectangle for text
+        if (prize.label === 'better luck') {
+          // Dark background for text on colored sectors
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+        } else {
+          // Dark background for text on white sectors
+          ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+        }
+        
+        ctx.fillRect(
+          radius * 0.65 - textWidth / 2 - 5,
+          -textHeight / 2 - 2,
+          textWidth + 10,
+          textHeight + 4
+        );
+        
+        // Draw text
+        ctx.fillStyle = 'white';
+        ctx.strokeStyle = prize.label === 'better luck' ? 'rgba(0, 0, 0, 0.5)' : 'black';
+        ctx.lineWidth = 2;
+        ctx.strokeText(text, radius * 0.65, 0);
+        ctx.fillText(text, radius * 0.65, 0);
+
+        ctx.restore();
+      }
+
+      ctx.rotate(rotation * (Math.PI / 180));
+      ctx.translate(-radius, -radius);
+
+      // Draw the static indicator
+      const indicatorLength = 30;
+      const indicatorWidth = 20;
+      ctx.save();
+      ctx.translate(canvas.width, canvas.height / 2);
+      ctx.beginPath();
+      ctx.moveTo(-indicatorLength, -indicatorWidth / 2);
+      ctx.lineTo(0, 0);
+      ctx.lineTo(-indicatorLength, indicatorWidth / 2);
+      ctx.closePath();
+      ctx.fillStyle = '#FF0000';
+      ctx.fill();
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.restore();
+    };
+
     if (canvasRef.current && images.size > 0) {
       drawWheel();
     }
-  }, [participants, rotation, images]);
+  }, [prizes, rotation, images,numSectors]);
 
   const darkenColor = (color: string, amount: number): string => {
     let r = parseInt(color.slice(1, 3), 16);
@@ -131,91 +266,6 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
     return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
   };
 
-  const drawWheel = () => {
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext('2d')!;
-    const radius = canvas.width / 2;
-    const sliceAngle = (2 * Math.PI) / numSectors;
-
-    // Clear previous drawing
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.translate(radius, radius);
-    ctx.rotate(-rotation * (Math.PI / 180));
-
-    // Draw sectors
-    for (let i = 0; i < numSectors; i++) {
-      const startAngle = i * sliceAngle;
-      const endAngle = (i + 1) * sliceAngle;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.arc(0, 0, radius, startAngle, endAngle);
-      ctx.closePath();
-      const color = darkenColor(colors[i % colors.length], 30);
-      ctx.fillStyle = color;
-      ctx.fill();
-
-      // Draw the image and name in the sector
-      ctx.save();
-      ctx.rotate((startAngle + endAngle) / 2);
-      
-      const participant = participants[i];
-      const img = images.get(participant.img_src);
-      
-      // Draw image
-      if (img) {
-        const imgSize = 50; // Adjust size as needed
-        const imgX = radius * 0.5 - imgSize / 2;
-        const imgY = -imgSize / 2;
-        
-        // Create circular clipping path for image
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(radius * 0.5, 0, imgSize / 2, 0, 2 * Math.PI);
-        ctx.closePath();
-        ctx.clip();
-        ctx.drawImage(img, imgX, imgY, imgSize, imgSize);
-        ctx.restore();
-        
-        // Draw white border around image
-        ctx.beginPath();
-        ctx.arc(radius * 0.5, 0, imgSize / 2, 0, 2 * Math.PI);
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-      }
-      
-      // Draw the name below the image
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'top';
-      ctx.fillStyle = 'white';
-      ctx.font = 'bold 14px Arial';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      ctx.shadowOffsetX = 1;
-      ctx.shadowOffsetY = 1;
-      ctx.shadowBlur = 3;
-      ctx.fillText(capitalize(participant.label) || '', radius * 0.5, 35);
-      
-      ctx.restore();
-    }
-
-    ctx.rotate(rotation * (Math.PI / 180)); // Reset rotation
-    ctx.translate(-radius, -radius);
-
-    // Draw the static indicator
-    const indicatorLength = 20;
-    const indicatorWidth = 10;
-    ctx.save();
-    ctx.translate(canvas.width, canvas.height / 2);
-    ctx.beginPath();
-    ctx.moveTo(-indicatorLength, -indicatorWidth / 2);
-    ctx.lineTo(0, -indicatorWidth / 2);
-    ctx.lineTo(0, indicatorWidth / 2);
-    ctx.lineTo(-indicatorLength, indicatorWidth / 2);
-    ctx.closePath();
-    ctx.fillStyle = 'red';
-    ctx.fill();
-    ctx.restore();
-  };
 
 
   const startSpin = () => {
@@ -246,7 +296,7 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
       const currentRotation =
         rotation +
         (spinDirection === 'clockwise' ? -totalRotation : totalRotation) *
-          easeT;
+        easeT;
 
       setRotation(currentRotation);
 
@@ -265,9 +315,16 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
     const sliceAngle = 360 / numSectors;
     const normalizedRotation = ((finalRotation % 360) + 360) % 360;
     const winningSector = Math.floor(normalizedRotation / sliceAngle);
+    const prize=prizes[winningSector];
+    if (prize.label=="better luck"){
+      setPopupWinner(prizes[winningSector]);
+      setShowLosingPopup(true);
+    }else{
+      setPopupWinner(prizes[winningSector]);
+      setShowPopup(true);
 
-    setPopupWinner(participants[winningSector]);
-    setShowPopup(true);
+    }
+
   };
 
   const changeSpinDirection = () => {
@@ -303,13 +360,13 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
       <ButtonsContainer>
         <Button
           onClick={changeSpinDirection}
-          disabled={participants.length === 0 || spinning}
+          disabled={prizes.length === 0 || spinning}
         >
           {capitalize(spinDirection)}
         </Button>
         <Button
           onClick={startSpin}
-          disabled={participants.length === 0 || spinning}
+          disabled={prizes.length === 0 || spinning}
         >
           Spin
         </Button>
@@ -318,12 +375,12 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
         <Popup>
           <h2>Congratulations!</h2>
           {images.get(popupWinner.img_src) && (
-            <img 
-              src={popupWinner.img_src} 
+            <img
+              src={popupWinner.img_src}
               alt={popupWinner.label}
-              style={{ 
-                width: '100px', 
-                height: '100px', 
+              style={{
+                width: '100px',
+                height: '100px',
                 borderRadius: '50%',
                 objectFit: 'cover',
                 margin: '1rem auto'
@@ -331,6 +388,24 @@ export const Wheel: React.FC<Props> = ({ participants }) => {
             />
           )}
           <h3>{capitalize(popupWinner.label)}</h3>
+        </Popup>
+      )}
+      {showLosingPopup && popupWinner && (
+        <Popup>
+          <h2>Better Luck Next Time</h2>
+          {images.get(popupWinner.img_src) && (
+            <img
+              src={popupWinner.img_src}
+              alt={popupWinner.label}
+              style={{
+                width: '100px',
+                height: '100px',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                margin: '1rem auto'
+              }}
+            />
+          )}
         </Popup>
       )}
     </div>

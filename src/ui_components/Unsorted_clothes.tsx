@@ -1,5 +1,4 @@
 import type { Item } from '@/types'
-import React from 'react'
 import Draggable from './Draggable'
 
 

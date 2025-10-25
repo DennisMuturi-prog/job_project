@@ -113,7 +113,6 @@ const LoadAndSetupWasher = ({ title }: { title: string }) => {
   const [playSound] = useSound('/success_sound.mp3');
   const [items, setItems] = useState<LoadItem[]>(INITIAL_ITEMS);
   const imgRef = useRef<HTMLImageElement | null>(null);
-  const [scale, setScale] = useState<{ x: number; y: number }>({ x: 1, y: 1 });
   const [bounds, setBounds] = useState<Record<string, Bounds>>({});
   const [applyShaking, setApplyShaking] = useState(false);
   const unsortedItems = items.filter((item) => item.status === "UNSORTED");
@@ -132,7 +131,6 @@ const LoadAndSetupWasher = ({ title }: { title: string }) => {
 
       const scaleX = rect.width / naturalWidth;
       const scaleY = rect.height / naturalHeight;
-      setScale({ x: scaleX, y: scaleY });
 
       const newBounds: Record<string, Bounds> = {};
       areas.forEach((a) => {

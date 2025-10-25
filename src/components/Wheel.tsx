@@ -1,43 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
-
 import confetti from 'canvas-confetti';
-
 import { Button } from './styles';
 import { capitalize } from '@/lib/utils';
-
-const Popup = styled.div`
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: white;
-  color: #006400;
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  z-index: 1000;
-  animation: popin 1s ease-out;
-
-  @keyframes popin {
-    0% {
-      opacity: 0;
-      transform: translate(-50%, -50%) scale(0.5);
-    }
-    100% {
-      opacity: 1;
-      transform: translate(-50%, -50%) scale(1);
-    }
-  }
-`;
-
-const ButtonsContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
-`;
+import { Stepper } from '@/App';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button as ShadcnButton } from "@/components/ui/button";
 
 export interface Prize {
   img_src: string;
@@ -49,47 +23,20 @@ interface Props {
 }
 
 const betterLuckColors = ['#2563EB', '#10B981']; // Blue and Green
-const prizeColors = ['#FFFFFF', '#F3F4F6'];
-
-const colors = [
-  '#CC4629', // Darker vibrant orange
-  '#CC9A29', // Darker bright yellow
-  '#B2CC29', // Darker light green-yellow
-  '#5ECC29', // Darker bright green
-  '#29CC46', // Darker bright teal-green
-  '#29CC99', // Darker turquoise
-  '#2985CC', // Darker sky blue
-  '#293FCC', // Darker bright blue
-  '#4629CC', // Darker purple
-  '#9929CC', // Darker violet
-  '#CC2981', // Darker hot pink
-  '#CC2929', // Darker red
-  '#CC5929', // Darker coral
-  '#CC9529', // Darker gold
-  '#B2CC29', // Darker lime green
-  '#66CC29', // Darker olive green
-  '#29CC5F', // Darker mint green
-  '#29CC91', // Darker pale turquoise
-  '#298ECC', // Darker deep sky blue
-  '#4A29CC', // Darker royal blue
-  '#8429CC', // Darker medium purple
-  '#CC298F', // Darker fuchsia
-  '#CC294F', // Darker hot pink
-];
+const prizeColors = ['#FFFFFF', '#F3F4F6']; // White and light gray
 
 export const Wheel: React.FC<Props> = ({ prizes }) => {
   const [spinning, setSpinning] = useState(false);
   const [rotation, setRotation] = useState(0);
-  const [spinDirection, setSpinDirection] = useState<
-    'clockwise' | 'counterclockwise'
-  >('clockwise');
-  const [showPopup, setShowPopup] = useState(false);
-  const [showLosingPopup, setShowLosingPopup] = useState(false);
+  const [spinDirection, setSpinDirection] = useState<'clockwise' | 'counterclockwise'>('clockwise');
+  const [showDialog, setShowDialog] = useState(false);
+  const [isWinner, setIsWinner] = useState(false);
   const [popupWinner, setPopupWinner] = useState<Prize | null>(null);
   const [images, setImages] = useState<Map<string, HTMLImageElement>>(new Map());
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const numSectors = prizes.length;
+  const { goTo } = Stepper.useStepper();
 
   useEffect(() => {
     const loadImages = async () => {
@@ -169,7 +116,7 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
           const imgX = radius * 0.35 - imgSize / 2;
           const imgY = -imgSize / 2;
 
-          // Draw background circle behind image (darker for better visibility)
+          // Draw background circle behind image
           ctx.beginPath();
           ctx.arc(radius * 0.35, 0, imgSize / 2 + 3, 0, 2 * Math.PI);
           ctx.fillStyle = prize.label === 'better luck' ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.1)';
@@ -204,10 +151,8 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
         
         // Background rectangle for text
         if (prize.label === 'better luck') {
-          // Dark background for text on colored sectors
           ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         } else {
-          // Dark background for text on white sectors
           ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
         }
         
@@ -252,28 +197,13 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
     if (canvasRef.current && images.size > 0) {
       drawWheel();
     }
-  }, [prizes, rotation, images,numSectors]);
-
-  const darkenColor = (color: string, amount: number): string => {
-    let r = parseInt(color.slice(1, 3), 16);
-    let g = parseInt(color.slice(3, 5), 16);
-    let b = parseInt(color.slice(5, 7), 16);
-
-    r = Math.max(0, r - amount);
-    g = Math.max(0, g - amount);
-    b = Math.max(0, b - amount);
-
-    return `#${((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)}`;
-  };
-
-
+  }, [prizes, rotation, images, numSectors]);
 
   const startSpin = () => {
     if (spinning) return;
     setSpinning(true);
 
-    // Set the number of full rotations and calculate final rotation
-    const numFullRotations = Math.random() * 5 + 5; // Between 5 and 10 full rotations
+    const numFullRotations = Math.random() * 5 + 5;
     const totalRotation = numFullRotations * 360;
     const finalRotation =
       (rotation +
@@ -281,10 +211,7 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
       360;
 
     const spinDuration = 6000;
-    const easing = (t: number) => {
-      // Ease-out cubic
-      return 1 - Math.pow(1 - t, 3);
-    };
+    const easing = (t: number) => 1 - Math.pow(1 - t, 3);
 
     let startTime: number;
 
@@ -315,16 +242,18 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
     const sliceAngle = 360 / numSectors;
     const normalizedRotation = ((finalRotation % 360) + 360) % 360;
     const winningSector = Math.floor(normalizedRotation / sliceAngle);
-    const prize=prizes[winningSector];
-    if (prize.label=="better luck"){
-      setPopupWinner(prizes[winningSector]);
-      setShowLosingPopup(true);
-    }else{
-      setPopupWinner(prizes[winningSector]);
-      setShowPopup(true);
-
+    const prize = prizes[winningSector];
+    
+    setPopupWinner(prize);
+    
+    if (prize.label === "better luck") {
+      setIsWinner(false);
+      setShowDialog(true);
+    } else {
+      setIsWinner(true);
+      setShowDialog(true);
+      startConfetti();
     }
-
   };
 
   const changeSpinDirection = () => {
@@ -332,14 +261,6 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
       spinDirection === 'clockwise' ? 'counterclockwise' : 'clockwise',
     );
   };
-
-  useEffect(() => {
-    if (showPopup) {
-      startConfetti();
-      const timer = setTimeout(() => setShowPopup(false), 5000); // Hide popup after 5 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [showPopup]);
 
   const startConfetti = () => {
     confetti({
@@ -349,15 +270,25 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
     });
   };
 
+  const handleRestart = () => {
+    setShowDialog(false);
+    goTo('sorting');
+  };
+
+  const handleTryAgain = () => {
+    setShowDialog(false);
+    setPopupWinner(null);
+  };
+
   return (
-    <div>
+    <div className="flex flex-col items-center gap-4">
       <canvas
         ref={canvasRef}
         width={400}
         height={400}
         style={{ borderRadius: '50%', border: '2px solid black' }}
       />
-      <ButtonsContainer>
+      <div className="flex justify-center gap-4">
         <Button
           onClick={changeSpinDirection}
           disabled={prizes.length === 0 || spinning}
@@ -370,44 +301,55 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
         >
           Spin
         </Button>
-      </ButtonsContainer>
-      {showPopup && popupWinner && (
-        <Popup>
-          <h2>Congratulations!</h2>
-          {images.get(popupWinner.img_src) && (
-            <img
-              src={popupWinner.img_src}
-              alt={popupWinner.label}
-              style={{
-                width: '100px',
-                height: '100px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                margin: '1rem auto'
-              }}
-            />
+      </div>
+
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl">
+              {isWinner ? '🎉 Congratulations!' : '😔 Better Luck Next Time'}
+            </DialogTitle>
+            <DialogDescription className="text-center">
+              {isWinner ? "You've won a prize!" : "Don't give up, try spinning again!"}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {popupWinner && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              {images.get(popupWinner.img_src) && (
+                <img
+                  src={popupWinner.img_src}
+                  alt={popupWinner.label}
+                  className="w-32 h-32 rounded-full object-cover border-4 border-primary"
+                />
+              )}
+              <p className="text-xl font-semibold">{capitalize(popupWinner.label)}</p>
+            </div>
           )}
-          <h3>{capitalize(popupWinner.label)}</h3>
-        </Popup>
-      )}
-      {showLosingPopup && popupWinner && (
-        <Popup>
-          <h2>Better Luck Next Time</h2>
-          {images.get(popupWinner.img_src) && (
-            <img
-              src={popupWinner.img_src}
-              alt={popupWinner.label}
-              style={{
-                width: '100px',
-                height: '100px',
-                borderRadius: '50%',
-                objectFit: 'cover',
-                margin: '1rem auto'
-              }}
-            />
-          )}
-        </Popup>
-      )}
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            {isWinner ? (
+              <>
+                <ShadcnButton variant="outline" onClick={() => setShowDialog(false)}>
+                  Close
+                </ShadcnButton>
+                <ShadcnButton onClick={handleRestart}>
+                  Restart Game
+                </ShadcnButton>
+              </>
+            ) : (
+              <>
+                <ShadcnButton variant="outline" onClick={() => setShowDialog(false)}>
+                  Close
+                </ShadcnButton>
+                <ShadcnButton onClick={handleTryAgain}>
+                  Try Again
+                </ShadcnButton>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import{t as e}from"./index-BKjFJaHJ.js";var t=e((e=>{
+import{t as e}from"./index-xblQdrQ5.js";var t=e((e=>{
 /*!
 *  Spatial Plugin - Adds support for stereo and 3D audio where Web Audio is supported.
 *  

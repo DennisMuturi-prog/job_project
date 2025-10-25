@@ -52,13 +52,13 @@ const areas: MapArea[] = [
   {
     id: "drum",
     shape: "circle",
-    coords: [511, 638, 189],
+    coords: [433,541,159],
     label: "Google link",
   },
   {
     id: "tray",
     shape: "poly",
-    coords: [376, 119, 381, 283, 290, 328, 97, 303, 93, 116],
+    coords: [319,101,323,239,249,273,83,250,82,100],
     label: "YouTube link",
   },
 ];
@@ -232,7 +232,7 @@ const LoadAndSetupWasher = ({ title }: { title: string }) => {
             <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
               <img
                 ref={imgRef}
-                src={`${import.meta.env.BASE_URL}/empty_washing_machine.png`}
+                src={`${import.meta.env.BASE_URL}/empty_washing_machine-small.webp`}
                 alt="Map"
                 height={300}
                 width={300}

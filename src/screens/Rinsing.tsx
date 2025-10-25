@@ -55,7 +55,7 @@ const areas: MapArea[] = [
     {
         id: "tray",
         shape: "poly",
-        coords: [260, 75, 261, 213, 189, 251, 19, 231, 18, 72],
+        coords: [273,78,277,223,199,263,21,244,19,79],
         label: "YouTube link",
     },
 ];
@@ -232,7 +232,7 @@ const Rinsing = ({ title }: { title: string }) => {
                         <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
                             <img
                                 ref={imgRef}
-                                src={`${import.meta.env.BASE_URL}/loaded_washing_machine.jpg`}
+                                src={`${import.meta.env.BASE_URL}/loaded_washing_machine-small.webp`}
                                 alt="Map"
                                 className="w-full h-auto max-h-[70vh] object-contain block"
                             />

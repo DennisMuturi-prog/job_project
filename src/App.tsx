@@ -23,7 +23,7 @@ export const Stepper = defineStepper(
 const App = () => (
   <Stepper.Scoped>
     <StepContent />
-    {/* <StepNavigation /> */}
+    <StepNavigation />
   </Stepper.Scoped>
 );
 

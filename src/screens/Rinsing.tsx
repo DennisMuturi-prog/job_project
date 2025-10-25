@@ -12,7 +12,12 @@ import React, { useEffect, useRef, useState } from "react";
 import {
     DndContext,
     type DragEndEvent,
+    KeyboardSensor,
+    MouseSensor,
+    TouchSensor,
     useDroppable,
+    useSensor,
+    useSensors,
 } from "@dnd-kit/core";
 import type { LoadItem } from "@/types";
 import Unsorted_laundry_items from "@/ui_components/unsorted_laundry_items";
@@ -58,13 +63,13 @@ const areas: MapArea[] = [
 const INITIAL_ITEMS: LoadItem[] = [
     {
         id: 'detergent',
-        asset_src: 'Ariel Original-small.webp',
+        asset_src: `${import.meta.env.BASE_URL}/Ariel Original-small.webp`,
         status: 'UNSORTED',
         correct_destination: 'NONE'
     },
     {
         id: 'downy',
-        asset_src: 'Sweet elegance1-small.webp',
+        asset_src: `${import.meta.env.BASE_URL}/Sweet elegance1-small.webp`,
         status: 'UNSORTED',
         correct_destination: 'TRAY'
     },
@@ -101,7 +106,7 @@ const HtmlDropZone: React.FC<HtmlDropZoneProps> = ({ id, bounds }) => {
 // ---- main component ----
 const Rinsing = ({ title }: { title: string }) => {
     const { next } = Stepper.useStepper();
-    const [playSound] = useSound('/success_sound.mp3');
+    const [playSound] = useSound(`${import.meta.env.BASE_URL}/success_sound.mp3`);
     const [items, setItems] = useState<LoadItem[]>(INITIAL_ITEMS);
     const imgRef = useRef<HTMLImageElement | null>(null);
     const [bounds, setBounds] = useState<Record<string, Bounds>>({});
@@ -206,6 +211,14 @@ const Rinsing = ({ title }: { title: string }) => {
             ),
         );
     }
+    const mouseSensor = useSensor(MouseSensor);
+       const touchSensor = useSensor(TouchSensor);
+        const keyboardSensor = useSensor(KeyboardSensor);
+        const sensors = useSensors(
+          mouseSensor,
+          touchSensor,
+          keyboardSensor,
+        );
 
     return (
         <Card>
@@ -214,12 +227,12 @@ const Rinsing = ({ title }: { title: string }) => {
                 <CardDescription>Downy keeps your clothes soft and fresh</CardDescription>
             </CardHeader>
             <CardContent>
-                <DndContext onDragEnd={handleDragEnd}>
+                <DndContext onDragEnd={handleDragEnd} sensors={sensors}>
                     <div className="flex">
                         <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
                             <img
                                 ref={imgRef}
-                                src="loaded_washing_machine.jpg"
+                                src={`${import.meta.env.BASE_URL}/loaded_washing_machine.jpg`}
                                 alt="Map"
                                 className="w-full h-auto max-h-[70vh] object-contain block"
                             />

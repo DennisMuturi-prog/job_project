@@ -8,28 +8,28 @@ import {
 import { Wheel, type Prize } from "@/components/Wheel"
 const prizes:Prize[]=[
     {label:'cap',
-        img_src:'green_cap-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/green_cap-small.webp`
     },
     {label:'better luck',
-        img_src:'better_luck-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/better_luck-small.webp`
     },
     {label:'detergent and downy',
-        img_src:'Ariel original-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/Ariel Original-small.webp`
     },
     {label:'better luck',
-        img_src:'better_luck-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/better_luck-small.webp`
     },
     {label:'bottle top',
-        img_src:'green_bottle-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/green_bottle-small.webp`
     },
     {label:'better luck',
-        img_src:'better_luck-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/better_luck-small.webp`
     },
     {label:'tshirt',
-        img_src:'green_tshirt.webp'
+        img_src:`${import.meta.env.BASE_URL}/green_tshirt.webp`
     },
     {label:'better luck',
-        img_src:'better_luck-small.webp'
+        img_src:`${import.meta.env.BASE_URL}/better_luck-small.webp`
     },
 
 ]
@@ -44,7 +44,6 @@ function Spin({ title }: { title: string }) {
                 <Wheel prizes={prizes}/>
             </CardContent>
             <CardFooter>
-                <p>Card Footer</p>
             </CardFooter>
         </Card>
     )

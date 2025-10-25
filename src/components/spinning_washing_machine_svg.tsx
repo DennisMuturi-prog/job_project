@@ -5,7 +5,7 @@ import useSound from 'use-sound';
 export default function SpinningWashingMachineSvg() {
   const [isSpinning] = useState(true); // Auto-start spinning
   const { next } = Stepper.useStepper();
-  const [playSound,{stop}] = useSound('/washing-machine-23412.mp3');
+  const [playSound,{stop}] = useSound(`${import.meta.env.BASE_URL}/washing-machine-23412.mp3`);
 
   useEffect(() => {
     playSound();

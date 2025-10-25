@@ -20,27 +20,27 @@ import { Stepper } from '@/App';
 const INITIAL_ITEMS: Item[] = [
   {
     id: 'draggable-white-1',
-    asset_src: 'shirt.webp',
+    asset_src: `${import.meta.env.BASE_URL}/shirt.webp`,
     status: 'UNSORTED',
   },
   {
     id: 'draggable-white-2',
-    asset_src: 'tshirt.webp',
+    asset_src: `${import.meta.env.BASE_URL}/tshirt.webp`,
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-1',
-    asset_src: 'towel.webp',
+    asset_src: `${import.meta.env.BASE_URL}/towel.webp`,
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-2',
-    asset_src: 'hoodie.webp',
+    asset_src: `${import.meta.env.BASE_URL}/hoodie.webp`,
     status: 'UNSORTED',
   },
   {
     id: 'draggable-delicate',
-    asset_src: '039_jean.webp',
+    asset_src: `${import.meta.env.BASE_URL}/039_jean.webp`,
     status: 'UNSORTED',
   },
 ];
@@ -55,13 +55,13 @@ export default function SortinClothes({ title }: { title: string }) {
     touchSensor,
     keyboardSensor,
   );
-  const [playSound] = useSound('/success_sound.mp3');
+  const [playSound] = useSound(`${import.meta.env.BASE_URL}/success_sound.mp3`);
   const [items, setItems] = useState<Item[]>(INITIAL_ITEMS);
   const divWhiteRef = useRef<SparkRef>(null);
   const divColouredRef = useRef<SparkRef>(null);
   const divDelicateRef = useRef<SparkRef>(null);
   const [shakingBucket, setShakingBucket] = useState<string | null>(null);
-  const [playSuccessChime] = useSound('/winning-82808.mp3'); // Add this
+  const [playSuccessChime] = useSound(`${import.meta.env.BASE_URL}/winning-82808.mp3`); // Add this
   const unsortedItems = items.filter((item) => item.status === "UNSORTED");
   const isComplete = unsortedItems.length === 0;
 
@@ -126,14 +126,14 @@ export default function SortinClothes({ title }: { title: string }) {
           {isComplete || <p>Drag and drop clothes in the right basket</p>}
           <div className="flex gap-2">
             <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef} className={shakingBucket === "WHITE" ? "shake" : ""}>
-              <Category_clothes asset_src="laundry_basket1.webp" type="WHITE" items={items.filter((item) => item.status === "WHITE")} />
+              <Category_clothes asset_src={`${import.meta.env.BASE_URL}/laundry_basket1.webp`} type="WHITE" items={items.filter((item) => item.status === "WHITE")} />
             </ClickSpark >
 
             <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divColouredRef} className={shakingBucket === "COLOURED" ? "shake" : ""}>
-              <Category_clothes asset_src="laundry_basket_2.webp" type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
+              <Category_clothes asset_src={`${import.meta.env.BASE_URL}/laundry_basket_2.webp`} type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
             </ClickSpark>
             <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divDelicateRef} className={shakingBucket === "DELICATE" ? "shake" : ""}>
-              <Category_clothes asset_src="laundry_basket_3.webp" type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
+              <Category_clothes asset_src={`${import.meta.env.BASE_URL}/laundry_basket_3.webp`} type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
             </ClickSpark>
           </div>
         </DndContext>

@@ -19,7 +19,7 @@ function Cycle_finished({title}:{title:string}) {
             </CardHeader>
             <CardContent>
                 <img
-                src="closed drum-small.webp"
+                src={`${import.meta.env.BASE_URL}/closed drum-small.webp`}
                 alt="Map"
                 height={300}
                 width={300}

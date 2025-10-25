@@ -23,7 +23,7 @@ export const Stepper = defineStepper(
 const App = () => (
   <Stepper.Scoped>
     <StepContent />
-    <StepNavigation />
+    {/* <StepNavigation /> */}
   </Stepper.Scoped>
 );
 
@@ -57,7 +57,7 @@ const StepContent = () => {
   );
 };
 
-const StepNavigation = () => {
+export const StepNavigation = () => {
   const { isLast,isFirst, reset, next,prev, when } = Stepper.useStepper();
   return (
     <>

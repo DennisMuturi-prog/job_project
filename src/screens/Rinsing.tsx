@@ -1,3 +1,13 @@
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+
+
 import React, { useEffect, useRef, useState } from "react";
 import {
     DndContext,
@@ -8,6 +18,9 @@ import type { LoadItem } from "@/types";
 import Unsorted_laundry_items from "@/ui_components/unsorted_laundry_items";
 import useSound from "use-sound";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Stepper } from '@/App';
+
 
 type CircleArea = {
     id: string;
@@ -37,7 +50,7 @@ const areas: MapArea[] = [
     {
         id: "tray",
         shape: "poly",
-        coords: [260,75,261,213,189,251,19,231,18,72],
+        coords: [260, 75, 261, 213, 189, 251, 19, 231, 18, 72],
         label: "YouTube link",
     },
 ];
@@ -86,13 +99,16 @@ const HtmlDropZone: React.FC<HtmlDropZoneProps> = ({ id, bounds }) => {
 };
 
 // ---- main component ----
-const LoadedWashingMachine: React.FC = () => {
+const Rinsing = ({ title }: { title: string }) => {
+    const { next } = Stepper.useStepper();
     const [playSound] = useSound('/success_sound.mp3');
     const [items, setItems] = useState<LoadItem[]>(INITIAL_ITEMS);
     const imgRef = useRef<HTMLImageElement | null>(null);
     const [scale, setScale] = useState<{ x: number; y: number }>({ x: 1, y: 1 });
     const [bounds, setBounds] = useState<Record<string, Bounds>>({});
     const [applyShaking, setApplyShaking] = useState(false);
+    const unsortedItems = items.filter((item) => item.status === "UNSORTED");
+    const isComplete = unsortedItems.length === 1;
 
     useEffect(() => {
         const img = imgRef.current;
@@ -157,16 +173,16 @@ const LoadedWashingMachine: React.FC = () => {
 
         const itemId = active.id as string;
         const current_active_info = itemId.split("-");
-        const current_active_name=(current_active_info[0]).toUpperCase();
-        const current_active_correct_destination=(current_active_info[1]).toUpperCase();
+        const current_active_name = (current_active_info[0]).toUpperCase();
+        const current_active_correct_destination = (current_active_info[1]).toUpperCase();
         const over_status = (over.id as LoadItem['status']).toUpperCase();
         if (over_status != current_active_correct_destination) {
             navigator.vibrate([10, 30]);
             setApplyShaking(true);
             setTimeout(() => setApplyShaking(false), 500);
-            if (current_active_name=='DETERGENT'){
+            if (current_active_name == 'DETERGENT') {
                 toast.warning("detergent is not used in the rinse cycle");
-            }else{
+            } else {
                 toast.warning(`put ${current_active_name} clothes in the ${current_active_correct_destination}`);
             }
             return;
@@ -179,7 +195,7 @@ const LoadedWashingMachine: React.FC = () => {
         // } else {
         //     divDelicateRef.current?.handleDivClick()
         // }
-        const active_name=current_active_name.toLowerCase();
+        const active_name = current_active_name.toLowerCase();
         playSound()
         setItems(() =>
             items.map((item) =>
@@ -194,26 +210,38 @@ const LoadedWashingMachine: React.FC = () => {
     }
 
     return (
-        <DndContext onDragEnd={handleDragEnd}>
-            <div className="flex">
-                <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
-                    <img
-                        ref={imgRef}
-                        src="loaded_washing_machine.jpg"
-                        alt="Map"
-                        className="w-full h-auto max-h-[70vh] object-contain block"
-                    />
-                    {/* Invisible droppable zones */}
-                    {Object.entries(bounds).map(([id, b]) => (
-                        <HtmlDropZone key={id} id={id} bounds={b} />
-                    ))}
-                </div>
-                <Unsorted_laundry_items
-                    items={items.filter((item) => item.status === "UNSORTED")}
-                />
-            </div>
-        </DndContext>
+        <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+                <CardDescription>Downy keeps your clothes soft and fresh</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <DndContext onDragEnd={handleDragEnd}>
+                    <div className="flex">
+                        <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
+                            <img
+                                ref={imgRef}
+                                src="loaded_washing_machine.jpg"
+                                alt="Map"
+                                className="w-full h-auto max-h-[70vh] object-contain block"
+                            />
+                            {/* Invisible droppable zones */}
+                            {Object.entries(bounds).map(([id, b]) => (
+                                <HtmlDropZone key={id} id={id} bounds={b} />
+                            ))}
+                        </div>
+                        <Unsorted_laundry_items
+                            items={unsortedItems}
+                        />
+                    </div>
+                </DndContext>
+            </CardContent>
+            <CardFooter>
+                {isComplete && <Button className="bounce_button" onClick={next}>RINSE,SPIN AND DRY</Button>}
+            </CardFooter>
+        </Card>
+
     );
 };
 
-export default LoadedWashingMachine;
+export default Rinsing;

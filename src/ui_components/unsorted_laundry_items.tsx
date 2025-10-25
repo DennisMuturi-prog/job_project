@@ -9,9 +9,12 @@ function Unsorted_laundry_items({items}:UnsortedProps) {
   return (
     <div>
         {items.map((item) => (
-        <Draggable key={item.id} id={`${item.id}-${item.correct_destination}`} >
-            <h1>{item.asset_src}</h1>
-        </Draggable>
+        <div className='mb-2'>
+          <Draggable key={item.id} id={`${item.id}-${item.correct_destination}`} >
+              <img src={item.asset_src} alt="" width={80} height={80}/>
+              <p>Add {item.id}</p>
+          </Draggable>
+        </div>
       ))}
 
     </div>

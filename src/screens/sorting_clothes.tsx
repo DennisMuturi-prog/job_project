@@ -5,38 +5,48 @@ import Category_clothes from "@/ui_components/Category_clothes";
 import Unsorted_clothes from "@/ui_components/Unsorted_clothes";
 import { useSensor, MouseSensor, TouchSensor, KeyboardSensor, useSensors, type DragEndEvent, DndContext } from "@dnd-kit/core";
 import { useState, useRef, useEffect } from "react";
-import { toast} from "sonner";
+import { toast } from "sonner";
 import useSound from "use-sound";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { Stepper } from '@/App';
+
 
 const INITIAL_ITEMS: Item[] = [
   {
     id: 'draggable-white-1',
-    asset_src: 'shirt.png',
+    asset_src: 'shirt.webp',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-white-2',
-    asset_src: 'tshirt.png',
+    asset_src: 'tshirt.webp',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-1',
-    asset_src: 'towel.png',
+    asset_src: 'towel.webp',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-coloured-2',
-    asset_src: 'hoodie.png',
+    asset_src: 'hoodie.webp',
     status: 'UNSORTED',
   },
   {
     id: 'draggable-delicate',
-    asset_src: '039_jean.png',
+    asset_src: '039_jean.webp',
     status: 'UNSORTED',
   },
 ];
 
-export default function SortinClothes({title}:{title:string}) {
+export default function SortinClothes({ title }: { title: string }) {
+  const { next } = Stepper.useStepper();
   const mouseSensor = useSensor(MouseSensor);
   const touchSensor = useSensor(TouchSensor);
   const keyboardSensor = useSensor(KeyboardSensor);
@@ -65,7 +75,7 @@ export default function SortinClothes({title}:{title:string}) {
     const newStatus = over.id as Item['status'];
     const extracted_over_status = newStatus.split("-")[1].toUpperCase();
     if (extracted_active_status != extracted_over_status) {
-      navigator.vibrate([10,30]);
+      navigator.vibrate([10, 30]);
       toast.warning(`put ${extracted_active_status} clothes in the ${extracted_active_status} bucket`)
       setShakingBucket(extracted_over_status);
       setTimeout(() => setShakingBucket(null), 500);
@@ -92,7 +102,7 @@ export default function SortinClothes({title}:{title:string}) {
       ),
     );
   }
-  
+
   useEffect(() => {
     if (isComplete) {
       playSuccessChime();
@@ -104,26 +114,34 @@ export default function SortinClothes({title}:{title:string}) {
   }, [isComplete, playSuccessChime]);
 
   return (
-      <div className="">
-        <h1>{title}</h1>
+    <Card>
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <Unsorted_clothes
             items={unsortedItems}
           />
-          <div className="flex gap-4 justify-center">
-              <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef}  className={shakingBucket === "WHITE" ? "shake" : ""}>
-                <Category_clothes asset_src="laundry_basket1.png" type="WHITE" items={items.filter((item) => item.status === "WHITE")} />
-              </ClickSpark >
-            
+          {isComplete || <p>Drag and drop clothes in the right basket</p>}
+          <div className="flex gap-2">
+            <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divWhiteRef} className={shakingBucket === "WHITE" ? "shake" : ""}>
+              <Category_clothes asset_src="laundry_basket1.webp" type="WHITE" items={items.filter((item) => item.status === "WHITE")} />
+            </ClickSpark >
+
             <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divColouredRef} className={shakingBucket === "COLOURED" ? "shake" : ""}>
-              <Category_clothes asset_src="laundry_basket_2.jpeg" type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
+              <Category_clothes asset_src="laundry_basket_2.webp" type="COLOURED" items={items.filter((item) => item.status === "COLOURED")} />
             </ClickSpark>
             <ClickSpark sparkSize={50} sparkColor="#7CFC00" ref={divDelicateRef} className={shakingBucket === "DELICATE" ? "shake" : ""}>
-              <Category_clothes asset_src="laundry_basket_3.jpeg" type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
+              <Category_clothes asset_src="laundry_basket_3.webp" type="DELICATE" items={items.filter((item) => item.status === "DELICATE")} />
             </ClickSpark>
           </div>
         </DndContext>
-        {isComplete && <Button className="bounce_button">next</Button>}
-      </div>
+      </CardContent>
+      <CardFooter>
+        {isComplete && <Button className="bounce_button" onClick={next}>next</Button>}
+      </CardFooter>
+    </Card>
+
   );
 }

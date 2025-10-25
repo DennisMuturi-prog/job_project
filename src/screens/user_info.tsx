@@ -1,6 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { object as z_object, string as z_string} from 'zod';
 import {isMobilePhone} from 'validator';
+import { Stepper } from '@/App';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -34,6 +35,7 @@ const formSchema = z_object({
 })
 
 function UserInfo() {
+    const { next } = Stepper.useStepper();
     const form = useForm({
         defaultValues: {
             name: "",
@@ -63,6 +65,7 @@ function UserInfo() {
             //     } as React.CSSProperties,
             // })
             console.log(value)
+            next()
         },
     })
 

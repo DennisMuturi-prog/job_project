@@ -1,0 +1,35 @@
+import { Button } from "@/components/ui/button"
+import {
+    Card,
+    CardContent,
+    CardFooter,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card"
+import { Stepper } from '@/App';
+
+function Cycle_finsihed({title}:{title:string}) {
+    const { next } = Stepper.useStepper();
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{title}</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <img
+                src="closed drum-small.webp"
+                alt="Map"
+                height={300}
+                width={300}
+                className="w-full h-auto max-h-[70vh] object-contain block"
+              />
+              <p>Congratulations</p>
+            </CardContent>
+            <CardFooter>
+                <Button onClick={next}>Next</Button>
+            </CardFooter>
+        </Card>
+    )
+}
+
+export default Cycle_finsihed

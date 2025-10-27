@@ -251,7 +251,7 @@ export default function SpinningWashingMachineSvg() {
         
         {/* Progress indicator */}
         <div className="mt-6 text-center">
-          <p className="text-gray-700 font-bold text-2xl mb-3">Rinsing in progress...</p>
+          <p className="text-gray-700 font-bold text-2xl mb-3">Washing in progress...</p>
           <div className="w-96 h-4 bg-gray-200 rounded-full overflow-hidden shadow-inner">
             <div 
               className="h-full bg-linear-to-r from-blue-400 to-blue-600 rounded-full shadow-lg"

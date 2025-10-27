@@ -1,13 +1,22 @@
 import * as React from "react";
 import { defineStepper } from "@stepperize/react";
 import UserInfo from "./screens/user_info";
-import SortinClothes from "./screens/sorting_clothes";
-import LoadAndSetupWasher from "./screens/load_and_setup_washer";
+import loadable from '@loadable/component'
 import { Toaster } from "sonner";
-import Washing from "./screens/Washing";
-import Rinsing from "./screens/Rinsing";
-import Cycle_finished from "./screens/Cycle_finished";
-import Spin from "./screens/Spin";
+// import SortingClothes from "./screens/sorting_clothes";
+// import LoadAndSetupWasher from "./screens/load_and_setup_washer";
+// import Washing from "./screens/Washing";
+// import Rinsing from "./screens/Rinsing";
+// import Cycle_finished from "./screens/Cycle_finished";
+// import Spin from "./screens/Spin";
+
+const SortingClothes = loadable(() => import('./screens/sorting_clothes'))
+
+const LoadAndSetupWasher = loadable(() => import('./screens/load_and_setup_washer'))
+const Washing = loadable(() => import('./screens/Washing'))
+const Rinsing = loadable(() => import('./screens/Rinsing'))
+const Cycle_finished = loadable(() => import('./screens/Cycle_finished'))
+const Spin = loadable(() => import('./screens/Spin'))
 
 export const Stepper = defineStepper(
   { id: "registration", title: "First" },
@@ -35,7 +44,7 @@ const StepContent = () => {
         <UserInfo/>
       ))}
       {when("sorting", (step) => (
-        <SortinClothes title={step.title}/>
+        <SortingClothes title={step.title}/>
       ))}
       {when("load_and_setup", (step) => (
         <LoadAndSetupWasher title={step.title}/>

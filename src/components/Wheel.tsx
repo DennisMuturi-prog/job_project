@@ -35,7 +35,6 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
   const [images, setImages] = useState<Map<string, HTMLImageElement>>(new Map());
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const numSectors = prizes.length;
   const { goTo } = Stepper.useStepper();
 
   useEffect(() => {
@@ -64,8 +63,10 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
     loadImages();
   }, [prizes]);
 
+  
   useEffect(() => {
     const drawWheel = () => {
+      const numSectors=prizes.length
       const canvas = canvasRef.current!;
       const ctx = canvas.getContext('2d')!;
       const radius = canvas.width / 2;
@@ -193,11 +194,12 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
       ctx.stroke();
       ctx.restore();
     };
+    
 
     if (canvasRef.current && images.size > 0) {
       drawWheel();
     }
-  }, [prizes, rotation, images, numSectors]);
+  }, [images,rotation,prizes]);
 
   const startSpin = () => {
     if (spinning) return;
@@ -239,6 +241,7 @@ export const Wheel: React.FC<Props> = ({ prizes }) => {
   };
 
   const determineWinner = (finalRotation: number) => {
+    const numSectors=prizes.length;
     const sliceAngle = 360 / numSectors;
     const normalizedRotation = ((finalRotation % 360) + 360) % 360;
     const winningSector = Math.floor(normalizedRotation / sliceAngle);

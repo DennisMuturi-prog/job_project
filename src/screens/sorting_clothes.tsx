@@ -45,7 +45,7 @@ const INITIAL_ITEMS: Item[] = [
   },
 ];
 
-export default function SortinClothes({ title }: { title: string }) {
+export default function SortingClothes({ title }: { title: string }) {
   const { next } = Stepper.useStepper();
   const mouseSensor = useSensor(MouseSensor);
   const touchSensor = useSensor(TouchSensor);

@@ -23,6 +23,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Stepper } from '@/App';
 
+import detergentImg from '@/assets/Ariel Original-small.webp';
+import hoodieImg from '@/assets/hoodie.webp';
+import downyImg from '@/assets/Sweet elegance1-small.webp';
+import emptyWasherImg from '@/assets/empty_washing_machine-small.webp';
+
+import successSoundUrl from '@/assets/success_sound.mp3?url';
+
 
 type CircleArea = {
   id: string;
@@ -66,23 +73,22 @@ const areas: MapArea[] = [
 const INITIAL_ITEMS: LoadItem[] = [
   {
     id: 'detergent',
-    asset_src: `${import.meta.env.BASE_URL}/Ariel Original-small.webp`,
+    asset_src: detergentImg, // Use imported image
     status: 'UNSORTED',
     correct_destination: 'TRAY'
   },
   {
     id: 'clothes',
-    asset_src: `${import.meta.env.BASE_URL}/hoodie.webp`,
+    asset_src: hoodieImg, // Use imported image
     status: 'UNSORTED',
     correct_destination: 'DRUM'
   },
   {
     id: 'downy',
-    asset_src: `${import.meta.env.BASE_URL}/Sweet elegance1-small.webp`,
+    asset_src: downyImg, // Use imported image
     status: 'UNSORTED',
     correct_destination: 'NONE'
   },
-
 ];
 
 
@@ -115,7 +121,7 @@ const HtmlDropZone: React.FC<HtmlDropZoneProps> = ({ id, bounds }) => {
 // ---- main component ----
 const LoadAndSetupWasher = ({ title }: { title: string }) => {
   const { next } = Stepper.useStepper();
-  const [playSound] = useSound(`${import.meta.env.BASE_URL}/success_sound.mp3`);
+  const [playSound] = useSound(successSoundUrl);
   const [items, setItems] = useState<LoadItem[]>(INITIAL_ITEMS);
   const imgRef = useRef<HTMLImageElement | null>(null);
   const [bounds, setBounds] = useState<Record<string, Bounds>>({});
@@ -232,7 +238,7 @@ const LoadAndSetupWasher = ({ title }: { title: string }) => {
             <div style={{ position: "relative", display: "inline-block" }} className={applyShaking ? "shake" : ""}>
               <img
                 ref={imgRef}
-                src={`${import.meta.env.BASE_URL}/empty_washing_machine-small.webp`}
+                src={emptyWasherImg} 
                 alt="Map"
                 height={300}
                 width={300}

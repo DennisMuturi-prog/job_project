@@ -1,6 +1,5 @@
 import { useForm } from "@tanstack/react-form";
 import { object as z_object, string as z_string} from 'zod';
-import {isMobilePhone} from 'validator';
 import { Stepper } from '@/App';
 
 import { Button } from "@/components/ui/button"
@@ -20,12 +19,30 @@ import {
 } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 
-
+const isValidKenyanPhone = (phone: string): boolean => {
+    // Remove all spaces, dashes, and parentheses
+    const cleaned = phone.replace(/[\s\-()]/g, '');
+    
+    // Kenyan phone number patterns:
+    // 1. +254 followed by 9 digits (712345678, 722345678, 733345678, 745345678, etc.)
+    // 2. 254 followed by 9 digits
+    // 3. 0 followed by 9 digits (0712345678, 0722345678, etc.)
+    
+    const patterns = [
+        /^\+254[17]\d{8}$/,           // +254712345678 or +254112345678
+        /^254[17]\d{8}$/,             // 254712345678
+        /^0[17]\d{8}$/,               // 0712345678
+    ];
+    
+    return patterns.some(pattern => pattern.test(cleaned));
+};
 const formSchema = z_object({
     name: z_string()
         .min(2, "name must be at least 2 characters.")
         .max(32, "name title must be at most 32 characters."),
-    phone_number: z_string().refine(v => isMobilePhone(v, 'en-KE'), { message: 'invalid phone number' }),
+    phone_number: z_string().refine(isValidKenyanPhone, { 
+            message: 'Invalid Kenyan phone number. Use format: +254712345678, 254712345678, or 0712345678' 
+        }),
     detergent: z_string()
         .min(3, "detergent name  must be at least 2 characters.")
         .max(32, "detergent name must be at most 32 characters."),

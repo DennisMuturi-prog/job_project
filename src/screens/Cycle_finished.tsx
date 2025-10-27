@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/card"
 import { Stepper } from '@/App';
 import confetti from "canvas-confetti";
+import closedDrumImg from '@/assets/closed drum-small.webp';
 
 function Cycle_finished({title}:{title:string}) {
     const { next } = Stepper.useStepper();
@@ -19,7 +20,7 @@ function Cycle_finished({title}:{title:string}) {
             </CardHeader>
             <CardContent>
                 <img
-                src={`${import.meta.env.BASE_URL}/closed drum-small.webp`}
+                src={closedDrumImg}
                 alt="Map"
                 height={300}
                 width={300}
